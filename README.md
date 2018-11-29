@@ -1,3 +1,4 @@
-# Teacher-Roaster-Front
+# Straight Shooter
 
-The front end of the Teacher Roaster project.
+An online teacher rating system for YK Pao School.
+
