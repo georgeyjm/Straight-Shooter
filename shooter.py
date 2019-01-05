@@ -45,10 +45,14 @@ ALL_TEACHERS = [i[0] for i in db.fetchall("SELECT `teacher_name` FROM `teachers`
 
 
 def update_session(logged_in=None, user_id=None, name=None, conduct=None):
-    session['logged_in'] = logged_in or session['logged_in']
-    session['user_id'] = user_id or session['user_id']
-    session['name'] = name or session['name']
-    session['conduct'] = conduct or session['conduct']
+    if logged_in != None:
+        session['logged_in'] = logged_in
+    if user_id != None:
+        session['user_id'] = user_id
+    if name != None:
+        session['name'] = name
+    if conduct != None:
+        session['conduct'] = conduct
     return 0
 
 
