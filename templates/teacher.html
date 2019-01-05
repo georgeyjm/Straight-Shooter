@@ -15,7 +15,11 @@
   <div id='teacher-title'>
     <div>
       <h1 id='teacher-name'>{{ teacher_name }}</h1>
-      <button id='rate-button' class='button primary'>Rate this teacher</button>
+      {% if not have_rated %}
+        <button id='rate-button' class='button primary' onclick='window.location.href = "/rate/" + TEACHER_NAME'>Rate this teacher</button>
+      {% else %}
+        <button id='rate-button' class='button disabled'>You have already rated</button>
+      {% endif %}
     </div>
     <div id='teacher-overall-container'>
       <p id='teacher-overall' class='rating'>{{ teacher_overall }}</p>

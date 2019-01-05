@@ -259,10 +259,19 @@ def teacher_page(teacher_name):
         if not teacher:
             return render_template()
 
+        # Check if the user has already rated this teacher
+        have_rated = False
+        if session.get('logged_in', False):
+            user_id = session.get('user_id')
+            teacher_id = teacher[0]
+            if db.fetchone("SELECT `rating_id` FROM `ratings` WHERE `user_id` = '{}' AND `teacher_id` = '{}'", user_id, teacher_id):
+                have_rated = True
+
         teacher_overall = teacher[2] or 'N/A'
         return render_template('teacher.html', teacher_id=teacher[0],
                                                teacher_name=teacher[1],
-                                               teacher_overall=teacher_overall)
+                                               teacher_overall=teacher_overall,
+                                               have_rated=have_rated)
 
     except Exception as e:
         return jsonify({'code': 2, 'msg': 'Server error', 'error': str(e)})
