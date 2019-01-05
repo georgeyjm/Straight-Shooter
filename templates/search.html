@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}{% endblock %}
+{% block head %}
+  {{ super() }}
+  <link rel='stylesheet' href='/static/styles/search.css'>
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script src='https://cdn.jsdelivr.net/npm/devbridge-autocomplete@1.4.9/dist/jquery.autocomplete.min.js' integrity='sha256-CA1BfwIJ3XnP7Jx7XaRKrrmJILIn+4skJeDB2YVo6nw=' crossorigin='anonymous'></script>
+  <script src='/static/scripts/search.js'></script>
+{% endblock %}
+
+{% block content %}
+  <h1 id='search-title' class='text-center'>Find a teacher</h1>
+  <input id='search-box' type='text' aria-label='Search' spellcheck='false'>
+{% endblock %}

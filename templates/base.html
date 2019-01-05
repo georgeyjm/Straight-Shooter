@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {% block head %}
+  <meta charset='utf-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+
+  <!-- Favicons -->
+  <link rel='apple-touch-icon' sizes='180x180' href='/static/favicons/apple-touch-icon.png'>
+  <link rel='icon' type='image/png' sizes='32x32' href='/static/favicons/favicon-32x32.png'>
+  <link rel='icon' type='image/png' sizes='16x16' href='/static/favicons/favicon-16x16.png'>
+  <link rel='manifest' href='/static/favicons/site.webmanifest'>
+  <link rel='mask-icon' href='/static/favicons/safari-pinned-tab.svg' color='#00a99d'>
+  <link rel='shortcut icon' href='/static/favicons/favicon.ico'>
+  <meta name='apple-mobile-web-app-title' content='Straight Shooter'>
+  <meta name='application-name' content='Straight Shooter'>
+  <meta name='msapplication-TileColor' content='#00a99d'>
+  <meta name='msapplication-config' content='/static/favicons/browserconfig.xml'>
+  <meta name='theme-color' content='#fffefc'>
+
+  <!-- Google Analytics -->
+  <script async src='https://www.googletagmanager.com/gtag/js?id=UA-108824572-3'></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-108824572-3');
+  </script>
+
+  <link rel='stylesheet' href='/static/styles/main.css'>
+
+  <title>{% block title %}{% endblock %}Straight Shooter</title>
+  {% endblock %}
+</head>
+
+<body>
+  <header class='navbar-bg'>
+    <div class='container navbar'>
+      <a class='logo' href='/'></a>
+      <ul class='nav-list'>
+        <li class='nav-item text-button dark' onclick='window.location.href = "/about?url=" + window.location.pathname'>About</li>
+        <li class='nav-item text-button dark' onclick='window.location.href = "/conduct?url=" + window.location.pathname'>Code of Conduct</li>
+        <li class='nav-item text-button dark' onclick='window.location.href = "/login?url=" + window.location.pathname'>Login</li>
+      </ul>
+    </div>
+  </header>
+  <div id='main-content' class='container'>{% block content %}{% endblock %}</div>
+  <footer class='footer'>
+    <p class='copyright-msg'>Copyright &copy; 2019 Straight Shooter. All rights reserved.</p>
+  </footer>
+</body>
+
+{% block scripts %}
+<script src='https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js' integrity='sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=' crossorigin='anonymous'></script>
+{% endblock %}
+
+</html>

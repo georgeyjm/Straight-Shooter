@@ -1,0 +1,285 @@
+/**************** General styles ****************/
+
+
+* {
+    margin: 0;
+    /* font-family: system-ui; */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    color: #040402;
+}
+
+html {
+    background: #fffefc;
+}
+
+h1 {
+    font-size: 38px;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 32px;
+    font-weight: 500;
+}
+
+a {
+    text-decoration: none;
+}
+
+input,
+textarea {
+    background: none;
+    box-shadow: none;
+
+    /* Remove iOS input shadow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+    outline: none;
+}
+
+.fa {
+    color: inherit;
+}
+
+
+/*************** Shorthand styles ***************/
+
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-italics {
+    font-style: italic;
+}
+
+.secondary-info {
+    color: #888;
+}
+
+.text-body {
+    font-size: 16px;
+    line-height: 24px;
+    text-align: justify;
+    color: #343432;
+}
+
+
+.text-button {
+    transition: 150ms ease-in-out;
+}
+
+
+.text-button.dark {
+    color: #040402;
+}
+
+
+.text-button.dark:hover {
+    /* color: #666; */
+    opacity: 0.6;
+}
+
+
+.button {
+    display: block;
+    padding: 10px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+    transition: 200ms ease-in-out;
+}
+
+
+.button.primary {
+    border: 1px solid #00a99d;
+    color: #00a99d;
+}
+
+
+.button.primary:hover {
+    background: #00a99d;
+    color: #fff;
+}
+
+
+.button.disabled {
+    border: 1px solid #999;
+    color: #999;
+    cursor: default;
+}
+
+
+/**************** Template styles ***************/
+
+
+.navbar-bg {
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    background: rgba(255, 254, 252, 0.98);
+    z-index: 100;
+}
+
+
+.navbar {
+    display: flex;
+    height: 80px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.navbar > .logo {
+    height: 32px;
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: contain;
+    cursor: pointer;
+}
+
+
+.navbar > .nav-list {
+    padding: 0;
+    list-style-type: none;
+    cursor: default; /* fix strange text cursor problem */
+}
+
+
+.navbar > .nav-list > .nav-item {
+    display: inline;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+.navbar > .nav-list > .nav-item:not(:first-child) {
+    margin-left: 40px;
+}
+
+
+.footer {
+    width: 100%;
+    position: absolute;
+    bottom: 20px;
+    text-align: center;
+}
+
+
+.copyright-msg {
+    font-size: 14px;
+    color: #aaa;
+}
+
+
+.rating.bad {
+    color: #FF0844;
+    background: none; /* Fallback */
+    background: -webkit-linear-gradient(to top, #FF0844 0%, #FF8199 100%);
+    background: -o-linear-gradient(to top, #FF0844 0%, #FF8199 100%);
+    background: -moz-linear-gradient(to top, #FF0844 0%, #FF8199 100%);
+    background: linear-gradient(to top, #FF0844 0%, #FF8199 100%);
+}
+
+
+.rating.medium {
+    color: #F1834F;
+    background: none; /* Fallback */
+    background: -webkit-linear-gradient(to top, #F1834F 0%, #FFC145 100%);
+    background: -o-linear-gradient(to top, #F1834F 0%, #FFC145 100%);
+    background: -moz-linear-gradient(to top, #F1834F 0%, #FFC145 100%);
+    background: linear-gradient(to top, #F1834F 0%, #FFC145 100%);
+}
+
+
+.rating.good {
+    color: #49BF64;
+    background: none; /* Fallback */
+    background: -webkit-linear-gradient(to top, #49BF64 0%, #80F154 100%);
+    background: -o-linear-gradient(to top, #49BF64 0%, #80F154 100%);
+    background: -moz-linear-gradient(to top, #49BF64 0%, #80F154 100%);
+    background: linear-gradient(to top, #49BF64 0%, #80F154 100%);
+}
+
+
+.rating.bad, .rating.medium, .rating.good {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+/************** Responsive design ***************/
+
+
+/* Extra Small Devices (Phone) */
+@media screen and (min-width: 0px) {
+
+    .container {
+        width: calc(100% - 30px);
+        margin: 0 15px;
+    }
+
+    .navbar > .logo {
+        width: 35px;
+        background-image: url('/static/images/logo-dark-primary-mark-nav.svg');
+    }
+
+}
+
+
+/* Small Devices (Phone) */
+@media screen and (min-width: 576px) {
+
+    .container {
+        width: 470px;
+        margin: 0 auto;
+    }
+
+}
+
+
+/* Medium Devices (Tablets) */
+@media screen and (min-width: 768px) {
+
+    .container {
+        width: 650px;
+    }
+
+    .navbar > .logo {
+        width: 110px;
+        background-image: url('/static/images/logo-dark-primary-full-nav.svg');
+    }
+
+}
+
+
+/* Large Devices (Desktop) */
+@media screen and (min-width: 992px) {
+
+    .container {
+        width: 750px;
+    }
+
+}
+
+
+/* Extra Large Devices (Wide Desktop) */
+@media screen and (min-width: 1200px) {
+
+    .container {
+        width: 900px;
+    }
+
+}

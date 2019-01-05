@@ -1,0 +1,130 @@
+#main-content {
+    margin-bottom: 100px;
+}
+
+
+#teacher-title {
+    display: flex;
+    margin-bottom: 80px;
+    justify-content: space-between;
+}
+
+
+#teacher-name {
+    font-size: 42px;
+}
+
+
+#teacher-overall {
+    margin-bottom: -5px;
+    font-size: 60px;
+    font-weight: 200;
+}
+
+
+#rate-button {
+    margin-top: 25px;
+}
+
+
+.rating-container {
+    display: flex;
+    margin: 30px 0 50px 0;
+}
+
+
+.rating-rating-container {
+    width: 160px;
+    min-width: 160px;
+    margin-right: 40px;
+}
+
+
+.rating-container .rating {
+    font-size: 36px;
+    font-weight: 300;
+}
+
+.rating-container .text-body {
+    margin-bottom: 8px;
+}
+
+
+.footer {
+    /* Since the positioning of the footer is very awkward */
+    display: none;
+}
+
+/************** Responsive design ***************/
+
+
+/* Extra Small Devices (Phone) */
+@media screen and (min-width: 0px) {
+
+    #main-content {
+        margin-top: 100px;
+    }
+
+
+    #teacher-title,
+    .rating-container {
+        display: block;
+    }
+
+    #teacher-overall {
+        margin-top: 40px;
+    }
+
+    .rating-rating-container {
+        margin-bottom: 15px;
+    }
+
+}
+
+
+/* Small Devices (Phone) */
+@media screen and (min-width: 576px) {
+
+    #main-content {
+        margin-top: 120px;
+    }
+
+}
+
+
+/* Medium Devices (Tablets) */
+@media screen and (min-width: 768px) {
+
+    #main-content {
+        margin-top: 150px;
+    }
+
+
+    #teacher-title,
+    .rating-container {
+        display: flex;
+    }
+
+    #teacher-overall-container {
+        text-align: right;
+    }
+
+    #teacher-overall {
+        margin-top: 0;
+    }
+
+    .rating-rating-container {
+        margin-bottom: 0;
+    }
+
+}
+
+
+/* Large Devices (Desktop) */
+@media screen and (min-width: 992px) {
+}
+
+
+/* Extra Large Devices (Wide Desktop) */
+@media screen and (min-width: 1200px) {
+}

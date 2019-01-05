@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}{{ teacher_name }} | {% endblock %}
+{% block head %}
+  {{ super() }}
+  <link rel='stylesheet' href='/static/styles/rate.css'>
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css' integrity='sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=' crossorigin='anonymous'>
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script>const TEACHER_ID = {{ teacher_id }}, TEACHER_NAME = '{{ teacher_name }}';</script>
+  <script src='/static/scripts/rate.js'></script>
+{% endblock %}
+
+{% block content %}
+  <h1 id='teacher-name'>{{ teacher_name }}</h1>
+
+  <p class='field-title'>Class</p>
+  <div class='classes-container'>
+    <select id='classes-dropdown' name='class'>
+      <option disabled selected value>Select your class</option>
+      <!-- <option style='display: none'></option> -->
+      <option value='volvo'>Volvo</option>
+      <option value='saab'>Saab</option>
+      <option value='fiat'>Fiat</option>
+      <option value='1'>Audi</option>
+    </select>
+  </div>
+
+  <p class='field-title'>Rating</p>
+  <div class='stars-container'>
+    <input type='radio' name='star-rating' value='5.0' id='star-5.0'>
+      <label class='star full' for='star-5.0'><i class='fa fa-star'></i></label>
+    <input type='radio' name='star-rating' value='4.5' id='star-4.5'>
+      <label class='star half' for='star-4.5'><i class='fa fa-star-half'></i></label>
+    <input type='radio' name='star-rating' value='4.0' id='star-4.0'>
+      <label class='star full' for='star-4.0'><i class='fa fa-star'></i></label>
+    <input type='radio' name='star-rating' value='3.5' id='star-3.5'>
+      <label class='star half' for='star-3.5'><i class='fa fa-star-half'></i></label>
+    <input type='radio' name='star-rating' value='3.0' id='star-3.0'>
+      <label class='star full' for='star-3.0'><i class='fa fa-star'></i></label>
+    <input type='radio' name='star-rating' value='2.5' id='star-2.5'>
+      <label class='star half' for='star-2.5'><i class='fa fa-star-half'></i></label>
+    <input type='radio' name='star-rating' value='2.0' id='star-2.0'>
+      <label class='star full' for='star-2.0'><i class='fa fa-star'></i></label>
+    <input type='radio' name='star-rating' value='1.5' id='star-1.5'>
+      <label class='star half' for='star-1.5'><i class='fa fa-star-half'></i></label>
+    <input type='radio' name='star-rating' value='1.0' id='star-1.0'>
+      <label class='star full' for='star-1.0'><i class='fa fa-star'></i></label>
+    <input type='radio' name='star-rating' value='0.5' id='star-0.5'>
+      <label class='star half' for='star-0.5'><i class='fa fa-star-half'></i></label>
+  </div>
+
+  <p class='field-title'>Comment</p>
+  <textarea id='comment' class='text-body'></textarea>
+  <button id='submit-button' class='button primary'>Submit</button>
+{% endblock %}

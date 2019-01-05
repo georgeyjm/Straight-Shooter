@@ -1,0 +1,124 @@
+#search-title {
+    margin-bottom: 30px;
+    font-size: 38px;
+}
+
+
+#search-box {
+    display: block;
+    height: 15px;
+    margin: 0 auto;
+    font-size: 16px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    border: 1px solid #e3e3e3;
+    box-shadow: none;
+    transition: box-shadow 200ms ease-in-out;
+}
+
+
+#search-box:hover,
+#search-box:focus,
+#search-box:hover + .autocomplete-suggestions,
+#search-box:focus + .autocomplete-suggestions {
+    box-shadow: 0px 4px 15px 0px rgba(227, 227, 227, 0.3);
+}
+
+
+.autocomplete-suggestions {
+    display: block;
+    position: relative !important;
+    margin: -1px auto 0 auto;
+    background: #fffefc;
+    border: 1px solid #e3e3e3;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    transition: box-shadow 200ms ease-in-out;
+}
+
+.autocomplete-suggestion {
+    padding: 13.5px 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.autocomplete-suggestion:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.autocomplete-selected {
+    background: #f3f2f0;
+}
+
+
+/************** Responsive design ***************/
+
+
+/* Extra Small Devices (Phone) */
+@media screen and (min-width: 0px) {
+
+    #search-box {
+        width: calc(100% - 40px);
+    }
+
+    .autocomplete-suggestions {
+        width: 100% !important;
+    }
+
+
+    #main-content {
+        margin-top: 130px;
+    }
+
+}
+
+
+/* Small Devices (Phone) */
+@media screen and (min-width: 576px) {
+
+    #main-content {
+        margin-top: 150px;
+    }
+
+}
+
+
+/* Medium Devices (Tablets) */
+@media screen and (min-width: 768px) {
+
+    #search-box {
+        width: 460px;
+    }
+
+    .autocomplete-suggestions {
+        width: 500px !important;
+    }
+
+
+    #main-content {
+        margin-top: 180px;
+    }
+
+}
+
+
+/* Large Devices (Desktop) */
+@media screen and (min-width: 992px) {
+
+    #main-content {
+        margin-top: 210px;
+    }
+
+}
+
+
+/* Extra Large Devices (Wide Desktop) */
+@media screen and (min-width: 1200px) {
+
+    #main-content {
+        margin-top: 280px;
+    }
+
+}

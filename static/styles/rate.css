@@ -1,0 +1,150 @@
+#teacher-name {
+    margin-bottom: 60px;
+}
+
+
+.field-title {
+    margin-top: 40px;
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+
+.classes-container {
+    /* border: 1px solid #ccc;
+    width: 200px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #fafafa url("img/icon-select.png") no-repeat 90% 50%; */
+}
+
+
+#classes-dropdown {
+    font-size: 16px;
+    /* border: none;
+    box-shadow: none;
+    background: transparent;
+    background-image: none; */
+}
+
+
+.stars-container {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    pointer-events: none;
+}
+
+.stars-container > input {
+    display: none;
+}
+
+.stars-container > .star {
+    padding: 0 0.1em;
+    font-size: 50px;
+    color: #e3e3e3;
+    cursor: pointer;
+    transition: color 100ms ease-in-out;
+    pointer-events: auto;
+    /* Remove iOS tap grey box */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.stars-container > .star.half {
+    margin-right: -0.6em;
+    padding-right: 0;
+    z-index: 2;
+}
+
+.stars-container > .star:hover, /* Highlight hovered star */
+.stars-container > .star:hover ~ .star /* Highlight all previous stars */ {
+    color: orange !important; /* The !important is used to override the third rule */
+}
+
+.stars-container > :checked ~ .star /* Highlight all selected stars */ {
+    color: orange;
+}
+
+.stars-container:hover > :checked ~ .star /* Dehighlight all selected stars on hover */ {
+    color: #e3e3e3;
+}
+
+
+#comment {
+    display: block;
+    padding: 15px 20px;
+    resize: both;
+    text-align: left;
+    border: 1px solid #e3e3e3;
+    border-radius: 5px;
+    background: #fffefc;
+}
+
+
+#submit-button {
+    margin-top: 40px;
+    margin-bottom: 80px;
+}
+
+
+.footer {
+    /* Since the positioning of the footer is very awkward */
+    display: none;
+}
+
+
+/************** Responsive design ***************/
+
+
+/* Extra Small Devices (Phone) */
+@media screen and (min-width: 0px) {
+
+    #main-content {
+        margin-top: 100px;
+    }
+
+    #comment {
+        width: calc(100% - 40px);
+        max-width: calc(100% - 40px);
+        height: 15em;
+        max-height: 40em;
+    }
+
+}
+
+
+/* Small Devices (Phone) */
+@media screen and (min-width: 576px) {
+
+    #main-content {
+        margin-top: 120px;
+    }
+
+}
+
+
+/* Medium Devices (Tablets) */
+@media screen and (min-width: 768px) {
+
+    #main-content {
+        margin-top: 150px;
+    }
+
+    #comment {
+        width: 60%;
+        max-width: 100%;
+        height: 10em;
+        max-height: 30em;
+    }
+
+}
+
+
+/* Large Devices (Desktop) */
+@media screen and (min-width: 992px) {
+}
+
+
+/* Extra Large Devices (Wide Desktop) */
+@media screen and (min-width: 1200px) {
+}

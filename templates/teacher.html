@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ teacher_name }} | {% endblock %}
+{% block head %}
+  {{ super() }}
+  <link rel='stylesheet' href='/static/styles/teacher.css'>
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script>const TEACHER_ID = {{ teacher_id }}, TEACHER_NAME = '{{ teacher_name }}';</script>
+  <script src='/static/scripts/teacher.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/timeago.js@4.0.0-beta.2/dist/timeago.min.js' integrity='sha256-yUmXY9C8hRTwEO76qiJepCcZ82pw4S1bZftvGpFPbtI=' crossorigin='anonymous'></script>
+{% endblock %}
+
+{% block content %}
+  <div id='teacher-title'>
+    <div>
+      <h1 id='teacher-name'>{{ teacher_name }}</h1>
+      <button id='rate-button' class='button primary'>Rate this teacher</button>
+    </div>
+    <div id='teacher-overall-container'>
+      <p id='teacher-overall' class='rating'>{{ teacher_overall }}</p>
+      <p class='secondary-info'>Overall Rating</p>
+    </div>
+  </div>
+  <h2>Ratings</h2>
+{% endblock %}

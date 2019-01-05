@@ -1,0 +1,89 @@
+#login-title {
+    margin-bottom: 30px;
+    font-size: 38px;
+}
+
+
+.login-field {
+    display: block;
+    height: 15px;
+    margin: 20px auto;
+    font-size: 16px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    border: 1px solid #e3e3e3;
+    box-shadow: none;
+    transition: box-shadow 200ms ease-in-out;
+}
+
+
+#login-button {
+    margin: 30px auto;
+}
+
+
+.login-error {
+    margin-top: -10px;
+    color: #fa7268;
+}
+
+
+/************** Responsive design ***************/
+
+
+/* Extra Small Devices (Phone) */
+@media screen and (min-width: 0px) {
+
+    .login-field {
+        width: calc(100% - 40px);
+    }
+
+    #main-content {
+        margin-top: 130px;
+    }
+
+}
+
+
+/* Small Devices (Phone) */
+@media screen and (min-width: 576px) {
+
+    #main-content {
+        margin-top: 150px;
+    }
+
+}
+
+
+/* Medium Devices (Tablets) */
+@media screen and (min-width: 768px) {
+
+    .login-field {
+        width: 300px;
+    }
+
+    #main-content {
+        margin-top: 180px;
+    }
+
+}
+
+
+/* Large Devices (Desktop) */
+@media screen and (min-width: 992px) {
+
+    #main-content {
+        margin-top: 210px;
+    }
+
+}
+
+
+/* Extra Large Devices (Wide Desktop) */
+@media screen and (min-width: 1200px) {
+
+    #main-content {
+        margin-top: 280px;
+    }
+
+}
