@@ -41,7 +41,11 @@
       <ul class='nav-list'>
         <li class='nav-item text-button dark' onclick='window.location.href = "/about?url=" + window.location.pathname'>About</li>
         <li class='nav-item text-button dark' onclick='window.location.href = "/conduct?url=" + window.location.pathname'>Code of Conduct</li>
-        <li class='nav-item text-button dark' onclick='window.location.href = "/login?url=" + window.location.pathname'>Login</li>
+        {% if not session.get('logged_in', False) %}
+          <li class='nav-item text-button dark' onclick='window.location.href = "/login?url=" + window.location.pathname'>Login</li>
+        {% else %}
+          <li class='nav-item' style='cursor: default'>{{ session.get('name', 'Anonymous').split()[0] }}</li>
+        {% endif %}
       </ul>
     </div>
   </header>
