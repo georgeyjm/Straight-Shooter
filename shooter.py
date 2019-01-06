@@ -32,18 +32,24 @@ db = Database(mysql)
 # login_manager.init_app(app)
 
 
-#################### Cache Initialization ####################
+#################### Constants Declaration ####################
 
 CONDUCT_CURRENT_VERSION = 1
 
 PAGE_NUM = 10
 NUM_RATING_SIGNIFICANT = 3
+MAX_COMMENT_LENGTH = 25565
+
+
+#################### Cache Initialization ####################
 
 teacher_ratings = {}
 
 # Due to the static-ness of this data, it will be stored as a constant
 ALL_TEACHERS = [i[0] for i in db.fetchall("SELECT `teacher_name` FROM `teachers`")]
 
+
+#################### Core Functions ####################
 
 def update_session(logged_in=None, user_id=None, name=None, conduct=None):
     if logged_in != None:
@@ -81,167 +87,6 @@ def update_teacher_overall(teacher_id, new_rating, user_id):
 
 
 
-# @login_manager.user_loader
-# def load_user(user_id):
-#   try:
-#       db_conn = mysql.connect()
-#       cursor = db_conn.cursor()
-#       db_conn.close()
-#   except Exception as e:
-#       return False 
-
-
-# @app.route('/get-ratings/<teacher_name>', methods=['POST'])
-# # @app.route('/get-ratings/<teacher_name>/')
-# def get_ratings(teacher_name):
-#     try:
-#         db_conn = mysql.connect()
-#         cursor = db_conn.cursor()
-#         cursor.execute('SELECT * FROM `teachers` WHERE `teacher_name` = \'{}\''.format(teacher_name))
-#         data = cursor.fetchone()
-#         teacher_id = data[0]
-#         cursor.execute('SELECT * FROM `ratings` WHERE `teacher_id` = \'{}\''.format(teacher_id))
-#         data = cursor.fetchall()
-#         data = [[ j for j in i] for i in data]
-#         tot = sum([i[4] for i in data]) / len(data) / 2
-#         teacher_ratings[teacher_name] = tot
-#         db_conn.close()
-#         return jsonify({'msg': 'success', 'data': data, 'rating': tot})
-#     except Exception as e:
-#         return jsonify({'msg': 'error', 'error': str(e)})
-
-
-# @app.route('/class/<class_id>', methods=['POST'])
-# def get_class(class_id):
-#     try:
-#         db_conn = mysql.connect()
-#         cursor = db_conn.cursor()
-#         cursor.execute('SELECT * FROM `classes` WHERE `class_id` = \'{}\''.format(class_id))
-#         data = cursor.fetchone()
-#         class_name = data[2]
-#         db_conn.close()
-#         return class_name
-#     except Exception as e:
-#         return jsonify({'msg': 'error', 'error': str(e)})
-
-
-# @app.route('/teacher/<teacher_name>')
-# def teacher_page(teacher_name):
-#     if teacher_name in ('teacher.css', 'teacher.js'):
-#         return send_from_directory('static/teacher', teacher_name)
-#     else:
-#         session['last_visited'] = '/teacher/' + teacher_name
-
-#     try:
-#         # db_conn = mysql.connect()
-#         # cursor = db_conn.cursor()
-#         # cursor.execute('SELECT * FROM `teachers` WHERE `teacher_name` = \'{}\''.format(teacher_name))
-#         # data = cursor.fetchone()
-
-#         # Try fetching teacher from database
-#         teacher = db.fetchone("SELECT * FROM `teachers` WHERE `teacher_name` = '{}'", teacher_name)
-
-#         # If teacher does not exist, return error page
-#         if not teacher:
-#             return render_template()
-
-#         # This also works, depends
-#         if not teacher_name in ALL_TEACHERS:
-#             pass
-
-#         if session.get('logged_in'):
-#             return render_template('teacher.html', teacher_name=teacher_name, overall_rating=teacher_rating, up_votes=1000, down_votes=10, username = session['username'])
-#         else:
-#             return render_template('teacher.html', teacher_name=teacher_name, overall_rating=teacher_rating, up_votes=1000, down_votes=10)
-
-#     except Exception as e:
-#         return jsonify({'msg': 'error', 'error': str(e)})
-
-
-
-# @app.route('/teacher1/<teacher_name>')
-# @app.route('/teacher1/<teacher_name>/')
-# def teacher1_page(teacher_name):
-#     try:
-#         db_conn = mysql.connect()
-#         cursor = db_conn.cursor()
-#         cursor.execute('SELECT * FROM `teachers` WHERE `teacher_name` = \'{}\''.format(teacher_name))
-#         data = cursor.fetchone()
-#         teacher_name = data[1]
-#         teacher_rating = data[2]
-#         teacher_id = data[0]
-#         cursor.execute('SELECT * FROM `ratings` WHERE `teacher_id` = \'{}\''.format(teacher_id))
-#         data = cursor.fetchall()
-#         data = [[j for j in i] for i in data]
-#         tot = ''
-#         if len(data) == 0:
-#             tot = 'Not rated'
-#         else:
-#             tot = '{}'.format(round(sum([i[4] for i in data]) / len(data) / 2, 1))
-#             teacher_ratings[teacher_name] = tot
-#         db_conn.close()
-#         return render_template(
-#             'teacher1.html',
-#             teacher_name=teacher_name,
-#             overall_rating=tot,
-#             up_votes=1000,
-#             down_votes=10,
-#             ratings=data,
-#             )
-#     except Exception as e:
-#         return jsonify({'msg': 'error', 'error': str(e)})
-
-
-# @app.route('/confirm-tos', methods=['POST'])
-# def confirm():
-#     if session.get('logged_in'):
-#         session['agreed'] = 1
-#         return jsonify({'success': 1})
-#     else:
-#         return jsonify({'success': 0})
-
-
-# @app.route('/rate/<teacher_name>', methods=['POST', 'GET'])
-# def rate(teacher_name):
-#     if request.method == 'GET':
-#         if teacher_name in ('rate.css', 'rate.js'):
-#             return send_from_directory('static/rate', teacher_name)
-#         if not session.get('logged_in'):
-#             return redirect(url_for('login'))
-#         session['last_visited'] = "/rate/" + teacher_name
-#         return render_template('rate.html', teacher_name=teacher_name)
-#     else:
-#         rating = request.form['rating']
-#         comment = request.form['comment']
-#         try:
-#             # Check if user is logged in 
-#             if session.get('logged_in'):
-#                 db_conn = mysql.connect()
-#                 cursor = db_conn.cursor()
-#                 # Get user_id from student id
-#                 cursor.execute('SELECT * FROM `users` WHERE `school_id` = \'{}\''.format(session.get('student_id')))
-#                 data = cursor.fetchone()
-#                 user_id = data[0]
-#                 db_conn.close()
-#                 # Get class_id
-#                 class_id = 1
-#                 # Get teacher_id
-#                 db_conn = mysql.connect()
-#                 cursor = db_conn.cursor()
-#                 cursor.execute("SELECT * FROM `teachers` WHERE `teacher_name` = '{}'".format(teacher_name))
-#                 data = cursor.fetchone()
-#                 teacher_id = data[0]
-#                 cursor.execute("INSERT INTO `ratings` (`user_id`, `teacher_id`, `class_id`, `rating`, `comment`) VALUES ('{}', '{}', '{}', '{}', '{}')".format(user_id, teacher_id, class_id, rating, comment))
-#                 db_conn.commit()
-#                 db_conn.close()
-#                 return jsonify({'success': 1, 'link': '/teacher/{}'.format(teacher_name)})
-#             else:
-#                 return jsonify({'success': 2})
-#         except Exception as e:
-#             _, __, exc_tb = sys.exc_info()
-#             return jsonify({'success': 0, "error": '{} at {}'.format(str(e), exc_tb.tb_lineno)})
-
-
 #################### Web Pages ####################
 
 
@@ -252,15 +97,10 @@ def search_page():
 
 @app.route('/login')
 def login_page():
-    # if session.get('logged_in'):
-    #     return redirect(url_for('send_index'))
-    # else:
-    return render_template('login.html')
-
-
-@app.route('/login/')
-def login_page_alt():
-    return redirect(url_for('login_page'))
+    if session.get('logged_in', False):
+        return redirect(url_for('search_page'))
+    else:
+        return render_template('login.html')
 
 
 @app.route('/logout')
@@ -432,7 +272,7 @@ def rate_teacher():
     if rating not in ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'):
         return jsonify({'code': 2, 'msg': 'Invalid rating value'})
 
-    if len(comment) == 0 or len(comment) > 25565:
+    if len(comment) == 0 or len(comment) > MAX_COMMENT_LENGTH:
         return jsonify({'code': 3, 'msg': 'Invalid comment length'})
 
     if not db.fetchone("SELECT * FROM `teachers` WHERE `teacher_id` = '{}'", teacher_id):

@@ -48,6 +48,14 @@ button:focus {
     color: inherit;
 }
 
+/* ::selection {
+  background: rgba(0, 169, 157, 0.3);
+}
+
+::-moz-selection {
+  background: rgba(0, 169, 157, 0.3);
+} */
+
 
 /*************** Shorthand styles ***************/
 
