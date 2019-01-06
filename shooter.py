@@ -37,6 +37,7 @@ db = Database(mysql)
 CONDUCT_CURRENT_VERSION = 1
 
 PAGE_NUM = 10
+NUM_RATING_SIGNIFICANT = 3
 
 teacher_ratings = {}
 
@@ -286,10 +287,15 @@ def teacher_page(teacher_name):
             if db.fetchone("SELECT `rating_id` FROM `ratings` WHERE `user_id` = '{}' AND `teacher_id` = '{}'", user_id, teacher_id):
                 have_rated = True
 
-        teacher_overall = teacher[2] or 'N/A'
+        num_ratings = db.fetchone("SELECT count(*) FROM `ratings` WHERE `teacher_id` = '{}'", teacher_id)[0]
+        if num_ratings < NUM_RATING_SIGNIFICANT:
+            teacher_overall = 'N/A'
+        else:
+            teacher_overall = round(teacher[2], 1)
+
         return render_template('teacher.html', teacher_id=teacher[0],
                                                teacher_name=teacher[1],
-                                               teacher_overall=round(teacher_overall, 1),
+                                               teacher_overall=teacher_overall,
                                                have_rated=have_rated)
 
     except Exception as e:
