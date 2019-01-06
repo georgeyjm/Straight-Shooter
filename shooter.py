@@ -65,6 +65,21 @@ def require_login(f):
     return wrapper
 
 
+def update_teacher_overall(teacher_id, new_rating, user_id):
+    current_overall = db.fetchone("SELECT `rating` FROM `teachers` WHERE `teacher_id` = '{}'", teacher_id)
+    num_ratings = db.fetchone("SELECT count(*) FROM `ratings` WHERE `teacher_id` = '{}'", teacher_id)
+
+    current_overall = current_overall[0]
+    num_ratings = num_ratings[0]
+    new_rating = int(new_rating) / 2
+
+    new_overall = (num_ratings * current_overall + new_rating) / (num_ratings + 1)
+
+    db.update("UPDATE `teachers` SET `rating` = '{}' WHERE `teacher_id` = '{}'", new_overall, teacher_id)
+    return 0
+
+
+
 # @login_manager.user_loader
 # def load_user(user_id):
 #   try:
@@ -274,7 +289,7 @@ def teacher_page(teacher_name):
         teacher_overall = teacher[2] or 'N/A'
         return render_template('teacher.html', teacher_id=teacher[0],
                                                teacher_name=teacher[1],
-                                               teacher_overall=teacher_overall,
+                                               teacher_overall=round(teacher_overall, 1),
                                                have_rated=have_rated)
 
     except Exception as e:
@@ -422,6 +437,9 @@ def rate_teacher():
 
     if class_id != '1' and not db.fetchone("SELECT * FROM `teaches` WHERE `teacher_id` = '{}' AND `class_id` = '{}'", teacher_id, class_id):
         return jsonify({'code': 6, 'msg': 'Invalid class'})
+
+    # Update the teacher's overall rating
+    update_teacher_overall(teacher_id, rating, user_id)
 
     # Data validated, perform insertion
     db.insert("INSERT INTO `ratings` (`user_id`, `teacher_id`, `class_id`, `rating`, `comment`) VALUES ('{}', '{}', '{}', '{}', '{}')", user_id, teacher_id, class_id, rating, comment)

@@ -58,6 +58,20 @@ class Database:
         return insert_id
 
 
+    def update(self, query: str, *formats: str):
+        '''Updates one or more cells in the database using a given SQL query.'''
+        # Create SQL query
+        formats = tuple(map(self._escape, formats))
+        query = query.format(*formats)
+        # Perform SQL query
+        conn = self.mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute(query)
+        conn.commit()
+        conn.close()
+        return 0
+
+
 def ykps_auth(username: str, password: str):
     '''
     Return: (ret: int, name: str)
