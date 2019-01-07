@@ -32,7 +32,9 @@ db = Database(mysql)
 # login_manager.init_app(app)
 
 
+
 #################### Constants Declaration ####################
+
 
 CONDUCT_CURRENT_VERSION = 1
 
@@ -41,7 +43,9 @@ NUM_RATING_SIGNIFICANT = 3
 MAX_COMMENT_LENGTH = 25565
 
 
+
 #################### Cache Initialization ####################
+
 
 teacher_ratings = {}
 
@@ -49,7 +53,9 @@ teacher_ratings = {}
 ALL_TEACHERS = [i[0] for i in db.fetchall("SELECT `teacher_name` FROM `teachers`")]
 
 
+
 #################### Core Functions ####################
+
 
 def update_session(logged_in=None, user_id=None, name=None, conduct=None):
     if logged_in != None:
@@ -73,6 +79,9 @@ def require_login(f):
 
 
 def update_teacher_overall(teacher_id, new_rating, user_id):
+    '''Updates the overall score of a teacher before a new rating is inserted.
+    Currently only using simple arithmetic mean, will change in future.'''
+
     current_overall = db.fetchone("SELECT `rating` FROM `teachers` WHERE `teacher_id` = '{}'", teacher_id)
     num_ratings = db.fetchone("SELECT count(*) FROM `ratings` WHERE `teacher_id` = '{}'", teacher_id)
 
@@ -225,6 +234,26 @@ def authenticate():
 
 @app.route('/get-ratings', methods=['POST'])
 def get_ratings():
+    '''
+    Response JSON: (code: int, description: str, name: str)
+        code: info code
+            0: successful
+            1: invalid parameters
+        msg: description of response
+        data: ratings data of the structure
+            [
+                [
+                    class_id,
+                    rating,
+                    comment,
+                    ups,
+                    downs,
+                    created_ts
+                ],
+                ...
+            ]
+    '''
+
     teacher_id = request.form['teacher_id']
     offset = request.form['offset']
 
@@ -240,6 +269,19 @@ def get_ratings():
 
 @app.route('/get-classes', methods=['POST'])
 def get_classes():
+    '''
+    Response JSON: (code: int, description: str, name: str)
+        code: info code
+            0: successful
+        msg: description of response
+        data: classes data of the structure
+            {
+                'class_id_1': 'class_name_1',
+                'class_id_2': 'class_name_2',
+                ...
+            }
+    '''
+
     teacher_id = request.form['teacher_id']
 
     class_ids = db.fetchall("SELECT `class_id` FROM `teaches` WHERE `teacher_id` = '{}'", teacher_id)
@@ -259,6 +301,19 @@ def get_classes():
 @app.route('/rate', methods=['POST'])
 @require_login
 def rate_teacher():
+    '''
+    Response JSON: (code: int, description: str, name: str)
+        code: info code
+            0: successful
+            1: invalid user ID
+            2: invalid rating value
+            3: invalid comment length
+            4: teacher not found
+            5: class not found
+            6: invalid class (class is not taught by the given teacher)
+        msg: description of response
+    '''
+
     teacher_id = request.form['teacher_id']
     class_id = request.form['class_id']
     rating = request.form['rating']
