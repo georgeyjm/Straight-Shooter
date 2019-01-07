@@ -123,6 +123,7 @@ def teacher_page(teacher_name):
     try:
         # Try fetching teacher from database
         teacher = db.fetchone("SELECT * FROM `teachers` WHERE `teacher_name` = '{}'", teacher_name)
+        teacher_id = teacher[0]
 
         # If teacher does not exist, return error page
         if not teacher:
@@ -132,7 +133,6 @@ def teacher_page(teacher_name):
         have_rated = False
         if session.get('logged_in', False):
             user_id = session.get('user_id')
-            teacher_id = teacher[0]
             if db.fetchone("SELECT `rating_id` FROM `ratings` WHERE `user_id` = '{}' AND `teacher_id` = '{}'", user_id, teacher_id):
                 have_rated = True
 

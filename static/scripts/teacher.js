@@ -66,11 +66,6 @@ if (overallRating !== 'N/A') {
 }
 
 
-$('#rate-button').click(e => {
-    
-})
-
-
 getClasses(() => loadRatings(offset));
 
 $(window).scroll(e => {
