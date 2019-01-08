@@ -1,6 +1,21 @@
 // Remove iOS tap grey box
 document.addEventListener('touchstart', () => {}, true);
 
+
+let formData = {
+    teacher_id: TEACHER_ID
+}
+
+$.post('/get-classes', formData, resp => {
+    if (resp.code === 0) {
+        classes = resp.data;
+        for (let classId of Object.keys(classes)) {
+            $('#classes-dropdown').append(`<option value='${classId}'>${classes[classId]}</option>`)
+        }
+    }
+ });
+
+
 $('#submit-button').click(() => {
     let rating = parseFloat($('.stars-container :checked').val()) * 2;
     let comment = $('#comment').val();
