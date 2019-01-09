@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}{% endblock %}
+{% block head %}
+  {{ super() }}
+  <link rel='stylesheet' href='/static/styles/login.css'>
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script src='/static/scripts/error.js'></script>
+{% endblock %}
+
+{% block content %}
+  <h1 class='text-center'>{{ error_msg }}</h1>
+  <p id='countdown' class='text-center secondary-info' style='margin-top: 40px'>Returning to main page in 5 seconds.</p>
+{% endblock %}

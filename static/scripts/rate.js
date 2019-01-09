@@ -13,7 +13,7 @@ $.post('/get-classes', formData, resp => {
             $('#classes-dropdown').append(`<option value='${classId}'>${classes[classId]}</option>`)
         }
     }
- });
+});
 
 
 $('#submit-button').click(() => {

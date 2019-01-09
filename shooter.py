@@ -123,11 +123,12 @@ def teacher_page(teacher_name):
     try:
         # Try fetching teacher from database
         teacher = db.fetchone("SELECT * FROM `teachers` WHERE `teacher_name` = '{}'", teacher_name)
-        teacher_id = teacher[0]
 
         # If teacher does not exist, return error page
         if not teacher:
-            return render_template()
+            return render_template('error.html', error_msg='Teacher not found!')
+
+        teacher_id = teacher[0]
 
         # Check if the user has already rated this teacher
         have_rated = False
