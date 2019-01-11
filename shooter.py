@@ -47,8 +47,6 @@ MAX_COMMENT_LENGTH = 25565
 #################### Cache Initialization ####################
 
 
-teacher_ratings = {}
-
 # Due to the static-ness of this data, it will be stored as a constant
 ALL_TEACHERS = [i[0] for i in db.fetchall("SELECT `teacher_name` FROM `teachers`")]
 
