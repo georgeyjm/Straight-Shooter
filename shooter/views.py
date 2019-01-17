@@ -13,25 +13,6 @@ NUM_RATING_SIGNIFICANT = 3
 MAX_COMMENT_LENGTH = 25565
 
 
-def update_teacher_overall(teacher_id, new_rating, user_id):
-    '''Updates the overall score of a teacher before a new rating is inserted.
-    Currently only using simple arithmetic mean, will change in future.'''
-
-    teacher = Teacher.query.get(teacher_id).first()
-    current_overall = teacher.rating
-    num_ratings = Rating.query.filter_by(teacher_id=teacher_id).count()
-
-    current_overall = current_overall[0]
-    num_ratings = num_ratings[0]
-    new_rating = int(new_rating) / 2
-
-    new_overall = (num_ratings * current_overall + new_rating) / (num_ratings + 1)
-
-    teacher.rating = new_overall
-    db.session.commit()
-    return 0
-
-
 #################### Web Pages ####################
 
 
