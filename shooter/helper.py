@@ -7,12 +7,14 @@ from shooter.models import Teacher, Rating
 
 def ykps_auth(username: str, password: str):
     '''
+    Authenticates the given credentials through Powerschool.
+
     Return: (ret: int, name: str)
         ret: info/exit code
             0: successful
             1: invalid credentials
             2: request error (possibly network (timeout) error)
-        name: name of the user (if ret != 0, name will be the error)
+        name: name of the user (if ret != 0, will be the error)
     '''
     
     url = 'https://powerschool.ykpaoschool.cn/guardian/home.html'
@@ -34,7 +36,7 @@ def ykps_auth(username: str, password: str):
     return ret, name
 
 
-def update_teacher_overall(teacher_id, new_rating, user_id):
+def update_teacher_overall(teacher_id: int, new_rating: int, user_id: int):
     '''Updates the overall score of a teacher before a new rating is inserted.
     Currently only using simple arithmetic mean, will change in future.'''
 
