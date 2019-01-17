@@ -2,9 +2,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
+from config import app_config
+
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_object('config')
+app.config.from_object(app_config['development'])
 app.config.from_pyfile('secrets.py')
 
 db = SQLAlchemy()

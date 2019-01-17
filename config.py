@@ -12,6 +12,7 @@ class Config:
 class DevelopmentConfig(Config):
     '''Development configurations.'''
 
+    ENV = 'development'
     TESTING = True
     DEBUG = True
     SQLALCHEMY_ECHO = True
@@ -21,6 +22,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     '''Production configurations.'''
 
+    ENV = 'production'
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
