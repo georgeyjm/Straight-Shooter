@@ -1,4 +1,5 @@
-from flask import request, send_from_directory, render_template, jsonify, redirect, url_for, session
+from flask import request, send_from_directory, render_template, jsonify, redirect, url_for
+from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 
 from shooter import app, db
@@ -12,12 +13,13 @@ from shooter.site_config import *
 
 @app.route('/')
 def search_page():
+    print(current_user)
     return render_template('search.html')
 
 
 @app.route('/login')
 def login_page():
-    if session.get('logged_in', False):
+    if current_user.is_authenticated:
         return redirect(url_for('search_page'))
     else:
         return render_template('login.html')
@@ -25,7 +27,7 @@ def login_page():
 
 @app.route('/logout')
 def logout_page():
-    session['logged_in'] = False
+    logout_user()
     return redirect(url_for('search_page'))
 
 
@@ -41,9 +43,8 @@ def teacher_page(teacher_name):
 
         # Check if the user has already rated this teacher
         have_rated = False
-        if session.get('logged_in', False):
-            user_id = session.get('user_id')
-            if Rating.query.filter_by(user_id=user_id, teacher_id=teacher.id).first():
+        if current_user.is_authenticated:
+            if Rating.query.filter_by(user_id=current_user.id, teacher_id=teacher.id).first():
                 have_rated = True
 
         # Check if the teacher received enough ratings
@@ -63,7 +64,7 @@ def teacher_page(teacher_name):
 
 
 @app.route('/rate/<teacher_name>')
-# @require_login
+@login_required
 def rate_page(teacher_name):
     try:
         # Try fetching teacher from database
@@ -127,8 +128,8 @@ def authenticate():
         # If user is already in the database, validate credentials
         if user:
             if user.authenticate(password):
-                # Password is correct, update session
-                session.update({'logged_in': True, 'user_id': user.id, 'name': user.name, 'conduct': user.conduct})
+                # Password is correct, login user
+                login_user(user)
                 return jsonify({'code': 0, 'msg': 'Success'})
             else:
                 return jsonify({'code': 1, 'msg': 'Invalid user credentials'})
@@ -148,7 +149,7 @@ def authenticate():
             db.session.add(user_obj)
             db.session.commit()
 
-            session.update({'logged_in': True, 'user_id': user_obj.id, 'name': user.name, 'conduct': 0})
+            login_user(user)
             return jsonify({'code': 0, 'msg': 'Success'})
 
     except Exception as e:
@@ -218,7 +219,7 @@ def get_classes():
 
 
 @app.route('/rate', methods=['POST'])
-# @require_login
+@login_required
 def rate_teacher():
     '''
     Response JSON: (code: int, description: str, name: str)
@@ -237,7 +238,7 @@ def rate_teacher():
     class_id = request.form['class_id']
     rating = request.form['rating']
     comment = request.form['comment']
-    user_id = session.get('user_id', None)
+    user_id = None if not current_user else current_user.id
 
     # Validations
     if not user_id:
