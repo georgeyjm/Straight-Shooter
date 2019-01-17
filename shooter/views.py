@@ -4,13 +4,7 @@ from werkzeug.security import generate_password_hash
 from shooter import app, db
 from shooter.models import *
 from shooter.helper import *
-
-
-CONDUCT_CURRENT_VERSION = 1
-
-PAGE_NUM = 10
-NUM_RATING_SIGNIFICANT = 3
-MAX_COMMENT_LENGTH = 25565
+from shooter.site_config import *
 
 
 #################### Web Pages ####################
@@ -191,7 +185,7 @@ def get_ratings():
     else:
         offset = int(offset)
 
-    results = Rating.query.filter_by(teacher_id=teacher_id).offset(PAGE_NUM * offset).limit(PAGE_NUM).all()
+    results = Rating.query.filter_by(teacher_id=teacher_id).offset(RATING_PAGE_SIZE * offset).limit(RATING_PAGE_SIZE).all()
     results = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in results]
 
     return jsonify({'code': 0, 'msg': 'Success', 'data': results})
