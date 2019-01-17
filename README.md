@@ -30,21 +30,21 @@ USE `shooter`;
 git clone https://github.com/yu-george/Straight-Shooter.git
 ```
 
-2. Create `secrets.py` in the root directory of the cloned repository with the following format
+2. Create `instance/secrets.py` in the root directory of the cloned repository with the following format
 
 ```python
-APP_SECRET_KEY = 'YOUR_APP_SECRET_KEY'
+SECRET_KEY = 'YOUR_APP_SECRET_KEY'
 
-MYSQL_DB = {
-    'HOST': 'YOUR_DB_HOST',
-    'DB': 'YOUR_DB_NAME',
-    'USER': 'YOUR_DB_USER',
-    'PASSWORD': 'YOUR_DB_PASSWORD'
-}
+_MYSQL_USERNAME = 'MYSQL_DB_USERNAME'
+_MYSQL_PASSWORD = 'MYSQL_DB_PASSWORD'
+_MYSQL_HOST = 'MYSQL_DB_HOSTNAME'
+_MYSQL_DBNAME = 'MYSQL_DB_NAME'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}/{}?charset=utf8mb4'.format(_MYSQL_USERNAME, _MYSQL_PASSWORD, _MYSQL_HOST, _MYSQL_DBNAME)
+
 ```
 
 3. Run the flask app and enjoy.
 
 ```shell
-FLASK_APP=shooter.py flask run --host 0.0.0.0
+FLASK_APP=shooter flask run --host 0.0.0.0
 ```
