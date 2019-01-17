@@ -97,7 +97,3 @@ class Vote(db.Model):
     def __repr__(self):
         return '<Vote {}>'.format(self.id)
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))

@@ -2,10 +2,23 @@ from flask import request, send_from_directory, render_template, jsonify, redire
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 
-from shooter import app, db
+from shooter import app, db, login_manager
 from shooter.models import *
 from shooter.helper import *
 from shooter.site_config import *
+
+
+#################### Login-Related ####################
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@login_manager.unauthorized_handler
+def unauthorized_redirect():
+    return redirect(url_for('login_page'))
 
 
 #################### Web Pages ####################
@@ -13,7 +26,6 @@ from shooter.site_config import *
 
 @app.route('/')
 def search_page():
-    print(current_user)
     return render_template('search.html')
 
 
