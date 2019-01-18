@@ -22,7 +22,7 @@
 }
 
 
-.login-error {
+#login-msg {
     margin-top: -10px;
     color: #fa7268;
 }
