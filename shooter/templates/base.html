@@ -23,7 +23,7 @@
   <script async src='https://www.googletagmanager.com/gtag/js?id=UA-108824572-3'></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    gtag = () => dataLayer.push(arguments);
     gtag('js', new Date());
     gtag('config', 'UA-108824572-3');
   </script>
@@ -41,10 +41,10 @@
       <ul class='nav-list'>
         <li class='nav-item text-button dark' onclick='window.location.href = "/about?url=" + window.location.pathname'>About</li>
         <li class='nav-item text-button dark' onclick='window.location.href = "/conduct?url=" + window.location.pathname'>Code of Conduct</li>
-        {% if not session.get('logged_in', False) %}
-          <li class='nav-item text-button dark' onclick='window.location.href = "/login?url=" + window.location.pathname'>Login</li>
+        {% if current_user.is_authenticated %}
+          <li class='nav-item' style='cursor: default'>{{ current_user.name.split()[0] }}</li>
         {% else %}
-          <li class='nav-item' style='cursor: default'>{{ session.get('name', 'Anonymous').split()[0] }}</li>
+          <li class='nav-item text-button dark' onclick='window.location.href = "/login?url=" + window.location.pathname'>Login</li>
         {% endif %}
       </ul>
     </div>

@@ -1,97 +1,24 @@
-import os
-import sys
-import time
-from functools import wraps
+from flask import request, send_from_directory, render_template, jsonify, redirect, url_for
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash
 
-from flask import Flask, request, send_from_directory, render_template, jsonify, redirect, url_for, session
-from flaskext.mysql import MySQL
-# from flask_login import LoginManager
-from werkzeug.security import generate_password_hash, check_password_hash
-
-from helper import *
-from secrets import *
+from shooter import app, db, login_manager
+from shooter.models import *
+from shooter.helper import *
+from shooter.site_config import *
 
 
-os.chdir(os.path.dirname(os.path.abspath(__name__)))
+#################### Login-Related ####################
 
 
-#################### App Initialization ####################
-
-app = Flask(__name__)
-app.secret_key = APP_SECRET_KEY
-
-mysql = MySQL()
-app.config['MYSQL_DATABASE_HOST'] = MYSQL_DB['HOST']
-app.config['MYSQL_DATABASE_DB'] = MYSQL_DB['DB']
-app.config['MYSQL_DATABASE_USER'] = MYSQL_DB['USER']
-app.config['MYSQL_DATABASE_PASSWORD'] = MYSQL_DB['PASSWORD']
-mysql.init_app(app)
-db = Database(mysql)
-
-# login_manager = LoginManager()
-# login_manager.init_app(app)
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
-
-#################### Constants Declaration ####################
-
-
-CONDUCT_CURRENT_VERSION = 1
-
-PAGE_NUM = 10
-NUM_RATING_SIGNIFICANT = 3
-MAX_COMMENT_LENGTH = 25565
-
-
-
-#################### Cache Initialization ####################
-
-
-# Due to the static-ness of this data, it will be stored as a constant
-ALL_TEACHERS = [i[0] for i in db.fetchall("SELECT `teacher_name` FROM `teachers`")]
-
-
-
-#################### Core Functions ####################
-
-
-def update_session(logged_in=None, user_id=None, name=None, conduct=None):
-    if logged_in != None:
-        session['logged_in'] = logged_in
-    if user_id != None:
-        session['user_id'] = user_id
-    if name != None:
-        session['name'] = name
-    if conduct != None:
-        session['conduct'] = conduct
-    return 0
-
-
-def require_login(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        if not session.get('logged_in', False):
-            return redirect(url_for('login_page'))
-        return f(*args, **kwargs)
-    return wrapper
-
-
-def update_teacher_overall(teacher_id, new_rating, user_id):
-    '''Updates the overall score of a teacher before a new rating is inserted.
-    Currently only using simple arithmetic mean, will change in future.'''
-
-    current_overall = db.fetchone("SELECT `rating` FROM `teachers` WHERE `teacher_id` = '{}'", teacher_id)
-    num_ratings = db.fetchone("SELECT count(*) FROM `ratings` WHERE `teacher_id` = '{}'", teacher_id)
-
-    current_overall = current_overall[0]
-    num_ratings = num_ratings[0]
-    new_rating = int(new_rating) / 2
-
-    new_overall = (num_ratings * current_overall + new_rating) / (num_ratings + 1)
-
-    db.update("UPDATE `teachers` SET `rating` = '{}' WHERE `teacher_id` = '{}'", new_overall, teacher_id)
-    return 0
-
+@login_manager.unauthorized_handler
+def unauthorized_redirect():
+    return redirect(url_for('login_page'))
 
 
 #################### Web Pages ####################
@@ -104,7 +31,7 @@ def search_page():
 
 @app.route('/login')
 def login_page():
-    if session.get('logged_in', False):
+    if current_user.is_authenticated:
         return redirect(url_for('search_page'))
     else:
         return render_template('login.html')
@@ -112,7 +39,7 @@ def login_page():
 
 @app.route('/logout')
 def logout_page():
-    update_session(logged_in=False)
+    logout_user()
     return redirect(url_for('search_page'))
 
 
@@ -120,52 +47,50 @@ def logout_page():
 def teacher_page(teacher_name):
     try:
         # Try fetching teacher from database
-        teacher = db.fetchone("SELECT * FROM `teachers` WHERE `teacher_name` = '{}'", teacher_name)
+        teacher = Teacher.query.filter_by(name=teacher_name).first()
 
         # If teacher does not exist, return error page
         if not teacher:
             return render_template('error.html', error_msg='Teacher not found!')
 
-        teacher_id = teacher[0]
-
         # Check if the user has already rated this teacher
         have_rated = False
-        if session.get('logged_in', False):
-            user_id = session.get('user_id')
-            if db.fetchone("SELECT `rating_id` FROM `ratings` WHERE `user_id` = '{}' AND `teacher_id` = '{}'", user_id, teacher_id):
+        if current_user.is_authenticated:
+            if Rating.query.filter_by(user_id=current_user.id, teacher_id=teacher.id).first():
                 have_rated = True
 
-        num_ratings = db.fetchone("SELECT count(*) FROM `ratings` WHERE `teacher_id` = '{}'", teacher_id)[0]
+        # Check if the teacher received enough ratings
+        num_ratings = Rating.query.filter_by(teacher_id=teacher.id).count()
         if num_ratings < NUM_RATING_SIGNIFICANT:
             teacher_overall = 'N/A'
         else:
-            teacher_overall = round(teacher[2], 1)
+            teacher_overall = round(teacher.rating, 1)
 
-        return render_template('teacher.html', teacher_id=teacher[0],
-                                               teacher_name=teacher[1],
+        return render_template('teacher.html', teacher_id=teacher.id,
+                                               teacher_name=teacher.name,
                                                teacher_overall=teacher_overall,
                                                have_rated=have_rated)
 
     except Exception as e:
-        return jsonify({'code': 2, 'msg': 'Server error', 'error': str(e)})
+        return render_template('error.html', error_msg='Server error!')
 
 
 @app.route('/rate/<teacher_name>')
-@require_login
+@login_required
 def rate_page(teacher_name):
     try:
         # Try fetching teacher from database
-        teacher = db.fetchone("SELECT * FROM `teachers` WHERE `teacher_name` = '{}'", teacher_name)
+        teacher = Teacher.query.filter_by(name=teacher_name).first()
 
         # If teacher does not exist, return error page
         if not teacher:
-            return render_template()
+            return render_template('error.html', error_msg='Teacher not found!')
 
-        return render_template('rate.html', teacher_id=teacher[0],
-                                            teacher_name=teacher[1])
+        return render_template('rate.html', teacher_id=teacher.id,
+                                            teacher_name=teacher.name)
 
     except Exception as e:
-        return jsonify({'code': 2, 'msg': 'Server error', 'error': str(e)})
+        return render_template('error.html', error_msg='Server error!')
 
 
 
@@ -174,8 +99,18 @@ def rate_page(teacher_name):
 
 @app.route('/get-teachers', methods=['POST'])
 def get_teachers():
+    '''
+    Response JSON: (code: int, msg: str, *data: list[str], *error: str)
+        code: info code
+            0: successful
+            1: server error (possible a bandwidth / network problem)
+        msg: description of response
+        *data: names of all teachers (code == 0)
+        *error: description of the error (code == 1)
+    '''
+
     try:
-        return jsonify({'code': 0, 'msg': 'Success', 'data': ALL_TEACHERS})
+        return jsonify({'code': 0, 'msg': 'Success', 'data': [i.name for i in Teacher.query.all()]})
     except Exception as e:
         return jsonify({'code': 1, 'msg': 'Server error', 'error': str(e)})
 
@@ -200,13 +135,13 @@ def authenticate():
     
     try:
         # Try fetching user from database
-        user = db.fetchone("SELECT * FROM `users` WHERE `school_id` = '{}'", username)
+        user = User.query.filter_by(school_id=username).first()
 
         # If user is already in the database, validate credentials
         if user:
-            if check_password_hash(user[3], password):
-                # Password is correct, update session
-                update_session(logged_in=True, user_id=user[0], name=user[2], conduct=user[7])
+            if user.authenticate(password):
+                # Password is correct, login user
+                login_user(user)
                 return jsonify({'code': 0, 'msg': 'Success'})
             else:
                 return jsonify({'code': 1, 'msg': 'Invalid user credentials'})
@@ -222,9 +157,11 @@ def authenticate():
 
             # User credentials validated, insert into database
             hashed_password = generate_password_hash(password)
-            user_id = db.insert("INSERT INTO `users` (`school_id`, `name`, `password`) VALUES ('{}', '{}', '{}')", username, name, hashed_password)
+            user_obj = User(school_id=username, name=name, password=hashed_password)
+            db.session.add(user_obj)
+            db.session.commit()
 
-            update_session(logged_in=True, user_id=user_id, name=name, conduct=0)
+            login_user(user)
             return jsonify({'code': 0, 'msg': 'Success'})
 
     except Exception as e:
@@ -234,7 +171,7 @@ def authenticate():
 @app.route('/get-ratings', methods=['POST'])
 def get_ratings():
     '''
-    Response JSON: (code: int, description: str, name: str)
+    Response JSON: (code: int, msg: str, data: list[list])
         code: info code
             0: successful
             1: invalid parameters
@@ -261,7 +198,8 @@ def get_ratings():
     else:
         offset = int(offset)
 
-    results = db.fetchall("SELECT `class_id`, `rating`, `comment`, `ups`, `downs`, UNIX_TIMESTAMP(`created`) FROM `ratings` WHERE `teacher_id` = '{}' LIMIT {}, {}", teacher_id, PAGE_NUM * offset, PAGE_NUM)
+    results = Rating.query.filter_by(teacher_id=teacher_id).offset(RATING_PAGE_SIZE * offset).limit(RATING_PAGE_SIZE).all()
+    results = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in results]
 
     return jsonify({'code': 0, 'msg': 'Success', 'data': results})
 
@@ -283,22 +221,17 @@ def get_classes():
 
     teacher_id = request.form['teacher_id']
 
-    class_ids = db.fetchall("SELECT `class_id` FROM `teaches` WHERE `teacher_id` = '{}'", teacher_id)
-    class_ids = map(lambda x: str(x[0]), class_ids)
-    class_ids = ','.join(class_ids)
-    if not class_ids:
-        results = ()
-    else:
-        results = db.fetchall("SELECT `class_id`, `class_name` FROM `classes` WHERE class_id IN ({})", class_ids)
+    # Get all classes that the teacher teaches
+    class_ids = Teach.query.filter_by(teacher_id=teacher_id).all()
+    classes = {i.class_id: Class.query.get(i.class_id).name for i in class_ids}
 
-    classes = {i: j for i, j in results}
     classes[1] = 'N/A'
 
     return jsonify({'code': 0, 'msg': 'Success', 'data': classes})
 
 
 @app.route('/rate', methods=['POST'])
-@require_login
+@login_required
 def rate_teacher():
     '''
     Response JSON: (code: int, description: str, name: str)
@@ -317,7 +250,7 @@ def rate_teacher():
     class_id = request.form['class_id']
     rating = request.form['rating']
     comment = request.form['comment']
-    user_id = session.get('user_id', None)
+    user_id = None if not current_user else current_user.id
 
     # Validations
     if not user_id:
@@ -329,19 +262,20 @@ def rate_teacher():
     if len(comment) == 0 or len(comment) > MAX_COMMENT_LENGTH:
         return jsonify({'code': 3, 'msg': 'Invalid comment length'})
 
-    if not db.fetchone("SELECT * FROM `teachers` WHERE `teacher_id` = '{}'", teacher_id):
+    if not Teacher.query.get(teacher_id):
         return jsonify({'code': 4, 'msg': 'Teacher not found'})
 
-    if not db.fetchone("SELECT * FROM `classes` WHERE `class_id` = '{}'", class_id):
+    if not Class.query.get(class_id):
         return jsonify({'code': 5, 'msg': 'Class not found'})
 
-    if class_id != '1' and not db.fetchone("SELECT * FROM `teaches` WHERE `teacher_id` = '{}' AND `class_id` = '{}'", teacher_id, class_id):
+    if class_id != '1' and not Teach.query.filter_by(teacher_id=teacher_id, class_id=class_id).first():
         return jsonify({'code': 6, 'msg': 'Invalid class'})
 
     # Update the teacher's overall rating
     update_teacher_overall(teacher_id, rating, user_id)
 
     # Data validated, perform insertion
-    db.insert("INSERT INTO `ratings` (`user_id`, `teacher_id`, `class_id`, `rating`, `comment`) VALUES ('{}', '{}', '{}', '{}', '{}')", user_id, teacher_id, class_id, rating, comment)
+    rating_obj = Rating(user_id=user_id, teacher_id=teacher_id, class_id=class_id, rating=rating, comment=comment)
+    db.session.add(rating_obj)
+    db.session.commit()
     return jsonify({'code': 0, 'msg': 'Success'})
-
