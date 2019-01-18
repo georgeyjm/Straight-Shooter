@@ -30,7 +30,7 @@ def return_error_json(func):
             return func(*args, **kwargs)
         except Exception as e:
             _, __, exc_tb = sys.exc_info()
-            return jsonify({'code': -1, 'msg': 'Server error', 'error': '{}: {}'.format(e.__class__.__name__, e), 'line': exc_tb.tb_lineno})
+            return jsonify({'code': -1, 'error': '{}: {}'.format(e.__class__.__name__, e), 'line': exc_tb.tb_lineno})
     return wrapper
 
 
@@ -110,9 +110,7 @@ def rate_page(teacher_name):
     if not teacher:
         return render_template('error.html', error_msg='Teacher not found!')
 
-    return render_template('rate.html', teacher_id=teacher.id,
-                                        teacher_name=teacher.name)
-
+    return render_template('rate.html', teacher_id=teacher.id, teacher_name=teacher.name)
 
 
 #################### APIs ####################
@@ -122,33 +120,31 @@ def rate_page(teacher_name):
 @return_error_json
 def get_teachers():
     '''
-    Response JSON: (code: int, msg: str, data: list[str])
+    Response JSON: (code: int, data: list[str])
         code: info code
-            0: Success
-        msg: description of response
+            0: success
         data: names of all teachers
     '''
 
-    return jsonify({'code': 0, 'msg': 'Success', 'data': [i.name for i in Teacher.query.all()]})
+    return jsonify({'code': 0, 'data': get_all_teachers()})
 
 
 @app.route('/login', methods=['POST'])
 @return_error_json
 def authenticate():
     '''
-    Response JSON: (code: int, msg: str)
+    Response JSON: (code: int)
         code: info code
-            0: Success
-            1: Invalid credentials
-            2: Server network error
-        msg: description of response
+            0: success
+            1: missing / invalid user credentials
+            2: server network error
     '''
 
     username = request.form.get('username')
     password = request.form.get('password')
 
     if not all((username, password)):
-        return jsonify({'code': 1, 'msg': 'Missing user credentials'})
+        return jsonify({'code': 1})
 
     # Try fetching user from database
     user = User.query.filter_by(school_id=username).first()
@@ -158,18 +154,18 @@ def authenticate():
         if user.authenticate(password):
             # Password is correct, login user
             login_user(user)
-            return jsonify({'code': 0, 'msg': 'Success'})
+            return jsonify({'code': 0})
         else:
-            return jsonify({'code': 1, 'msg': 'Invalid user credentials'})
+            return jsonify({'code': 1})
 
     # New user trying to log in
     else:
         # Authenticate via PowerSchool
         ret, name = ykps_auth(username, password)
         if ret == 1:
-            return jsonify({'code': 1, 'msg': 'Invalid user credentials'})
+            return jsonify({'code': 1})
         elif ret == 2:
-            return jsonify({'code': 2, 'msg': 'Server network error', 'error': 'Unknown'})
+            return jsonify({'code': 2})
 
         # User credentials validated, insert into database
         hashed_password = generate_password_hash(password)
@@ -178,19 +174,18 @@ def authenticate():
         db.session.commit()
 
         login_user(user)
-        return jsonify({'code': 0, 'msg': 'Success'})
+        return jsonify({'code': 0})
 
 
 @app.route('/get-ratings', methods=['POST'])
 @return_error_json
 def get_ratings():
     '''
-    Response JSON: (code: int, msg: str, data: list[list])
+    Response JSON: (code: int, data: list[list])
         code: info code
-            0: successful
-            1: invalid parameters
-        msg: description of response
-        data: ratings data of the structure
+            0: success
+            1: missing / invalid parameters
+        data: ratings data
             [
                 [
                     class_id,
@@ -207,25 +202,25 @@ def get_ratings():
     teacher_id = request.form.get('teacher_id')
     offset = request.form.get('offset')
 
-    if not offset.isdigit():
-        return jsonify({'code': 1, 'msg': 'Invalid parameters'})
-    else:
-        offset = int(offset)
-
+    if not all((teacher_id, offset)) or not offset.isdigit():
+        return jsonify({'code': 1})
+    
+    # Get the specified page of ratings
+    offset = int(offset)
     results = Rating.query.filter_by(teacher_id=teacher_id).offset(RATING_PAGE_SIZE * offset).limit(RATING_PAGE_SIZE).all()
     results = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in results]
 
-    return jsonify({'code': 0, 'msg': 'Success', 'data': results})
+    return jsonify({'code': 0, 'data': results})
 
 
 @app.route('/get-classes', methods=['POST'])
 @return_error_json
 def get_classes():
     '''
-    Response JSON: (code: int, msg: str)
+    Response JSON: (code: int, data: dict[str: str])
         code: info code
-            0: successful
-        msg: description of response
+            0: success
+            1: missing parameter
         data: classes data of the structure
             {
                 'class_id_1': 'class_name_1',
@@ -234,15 +229,17 @@ def get_classes():
             }
     '''
 
-    teacher_id = request.form['teacher_id']
+    teacher_id = request.form.get('teacher_id')
+
+    if not teacher_id:
+        return jsonify({'code': 1})
 
     # Get all classes that the teacher teaches
     class_ids = Teach.query.filter_by(teacher_id=teacher_id).all()
     classes = {i.class_id: Class.query.get(i.class_id).name for i in class_ids}
-
     classes[1] = 'N/A'
 
-    return jsonify({'code': 0, 'msg': 'Success', 'data': classes})
+    return jsonify({'code': 0, 'data': classes})
 
 
 @app.route('/rate', methods=['POST'])
@@ -250,16 +247,15 @@ def get_classes():
 @return_error_json
 def rate_teacher():
     '''
-    Response JSON: (code: int, description: str, name: str)
+    Response JSON: (code: int)
         code: info code
-            0: successful
-            1: invalid user ID
+            0: success
+            1: missing parameters
             2: invalid rating value
             3: invalid comment length
             4: teacher not found
             5: class not found
-            6: invalid class (class is not taught by the given teacher)
-        msg: description of response
+            6: invalid class (teach does not teach the class)
     '''
 
     teacher_id = request.form.get('teacher_id')
@@ -270,22 +266,22 @@ def rate_teacher():
 
     # Validations
     if not all ((teacher_id, class_id, rating, comment, user_id)):
-        return jsonify({'code': 1, 'msg': 'Missing parameters'})
+        return jsonify({'code': 1})
 
     if not rating.is_digit() or int(rating) not in range(1, 11):
-        return jsonify({'code': 2, 'msg': 'Invalid rating value'})
+        return jsonify({'code': 2})
 
     if len(comment) == 0 or len(comment) > MAX_COMMENT_LENGTH:
-        return jsonify({'code': 3, 'msg': 'Invalid comment length'})
+        return jsonify({'code': 3})
 
     if not Teacher.query.get(teacher_id):
-        return jsonify({'code': 4, 'msg': 'Teacher not found'})
+        return jsonify({'code': 4})
 
     if not Class.query.get(class_id):
-        return jsonify({'code': 5, 'msg': 'Class not found'})
+        return jsonify({'code': 5})
 
     if class_id != '1' and not Teach.query.filter_by(teacher_id=teacher_id, class_id=class_id).first():
-        return jsonify({'code': 6, 'msg': 'Invalid class'})
+        return jsonify({'code': 6})
 
     # Update the teacher's overall rating
     update_teacher_overall(teacher_id, rating, user_id)
@@ -294,4 +290,4 @@ def rate_teacher():
     rating_obj = Rating(user_id=user_id, teacher_id=teacher_id, class_id=class_id, rating=rating, comment=comment)
     db.session.add(rating_obj)
     db.session.commit()
-    return jsonify({'code': 0, 'msg': 'Success'})
+    return jsonify({'code': 0})

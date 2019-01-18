@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from shooter import app, db
+from shooter import app, db, cache
 from shooter.models import Teacher, Rating
 
 
@@ -51,3 +51,8 @@ def update_teacher_overall(teacher_id: int, new_rating: int, user_id: int):
     teacher.rating = new_overall
     db.session.commit()
     return 0
+
+
+@cache.cached(timeout=3600, key_prefix='all_teachers')
+def get_all_teachers():
+    return [i.name for i in Teacher.query.all()]
