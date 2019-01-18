@@ -1,3 +1,4 @@
+import sys
 from functools import wraps
 
 from flask import request, send_from_directory, render_template, jsonify, redirect, url_for
@@ -51,6 +52,7 @@ def return_error_html(func):
 @app.route('/')
 @return_error_html
 def search_page():
+    1/0
     return render_template('search.html')
 
 
