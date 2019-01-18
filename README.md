@@ -48,3 +48,7 @@ SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}/{}?charset=utf8mb4'.format(_
 ```shell
 FLASK_APP=shooter flask run --host 0.0.0.0
 ```
+or alternatively
+```shell
+python run.py
+```
