@@ -1,9 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-from flask import redirect, url_for
 
-from shooter import app, db, login_manager
-from shooter.models import Teacher, Rating, User
+from shooter import app, db
+from shooter.models import Teacher, Rating
 
 
 def ykps_auth(username: str, password: str):
@@ -52,15 +51,3 @@ def update_teacher_overall(teacher_id: int, new_rating: int, user_id: int):
     teacher.rating = new_overall
     db.session.commit()
     return 0
-
-
-# Login-Related
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
-@login_manager.unauthorized_handler
-def unauthorized_redirect():
-    return redirect(url_for('login_page'))
