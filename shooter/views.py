@@ -52,7 +52,6 @@ def return_error_html(func):
 @app.route('/')
 @return_error_html
 def search_page():
-    1/0
     return render_template('search.html')
 
 
