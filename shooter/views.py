@@ -137,8 +137,9 @@ def authenticate():
     Response JSON: (code: int)
         code: info code
             0: success
-            1: missing / invalid user credentials
-            2: server network error
+            1: missing user credentials
+            2: invalid user credentials
+            3: server network error
     '''
 
     username = request.form.get('username')
@@ -157,16 +158,16 @@ def authenticate():
             login_user(user)
             return jsonify({'code': 0})
         else:
-            return jsonify({'code': 1})
+            return jsonify({'code': 2})
 
     # New user trying to log in
     else:
         # Authenticate via PowerSchool
         ret, name = ykps_auth(username, password)
         if ret == 1:
-            return jsonify({'code': 1})
-        elif ret == 2:
             return jsonify({'code': 2})
+        elif ret == 2:
+            return jsonify({'code': 3})
 
         # User credentials validated, insert into database
         hashed_password = generate_password_hash(password)
@@ -185,7 +186,8 @@ def get_ratings():
     Response JSON: (code: int, data: list[list])
         code: info code
             0: success
-            1: missing / invalid parameters
+            1: missing parameters
+            2: invalid parameters
         data: ratings data
             [
                 [
@@ -203,8 +205,11 @@ def get_ratings():
     teacher_id = request.form.get('teacher_id')
     offset = request.form.get('offset')
 
-    if not all((teacher_id, offset)) or not offset.isdigit():
+    if not all((teacher_id, offset)):
         return jsonify({'code': 1})
+
+    if not offset.isdigit():
+        return jsonify({'code': 2})
     
     # Get the specified page of ratings
     offset = int(offset)
