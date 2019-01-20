@@ -117,7 +117,7 @@ def rate_page(teacher_name):
 #################### APIs ####################
 
 
-@app.route('/get-teachers', methods=['POST'])
+@app.route('/get-teachers', methods=['GET', 'POST'])
 @return_error_json
 def get_teachers():
     '''
