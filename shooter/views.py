@@ -290,7 +290,7 @@ def rate_teacher():
     if not all ((teacher_id, class_id, rating, comment, user_id)):
         return jsonify({'code': 1})
 
-    if not rating.is_digit() or int(rating) not in range(1, 11):
+    if not rating.isdigit() or int(rating) not in range(1, 11):
         return jsonify({'code': 2})
 
     if len(comment) == 0 or len(comment) > MAX_COMMENT_LENGTH:
