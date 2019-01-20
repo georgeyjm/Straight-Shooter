@@ -1,4 +1,4 @@
-$.post('/get-teachers', resp => {
+$.get('/get-teachers', resp => {
     let allTeachers;
     if (resp.code === 0) allTeachers = resp.data;
     else allTeachers = []; // Placeholder, should retry or something
