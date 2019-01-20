@@ -1,7 +1,7 @@
 import sys
 from functools import wraps
 
-from flask import request, send_from_directory, render_template, jsonify, redirect, url_for
+from flask import Response, request, send_from_directory, render_template, jsonify, redirect, url_for, make_response
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 
@@ -46,10 +46,25 @@ def return_error_html(func):
     return wrapper
 
 
+def browser_cache(seconds):
+    def outer_wrapper(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            resp = func(*args, **kwargs)
+            if not isinstance(resp, Response):
+                resp = make_response(resp)
+            # Not setting 'Expires' because everyone is already using HTTP/1.1 now
+            resp.headers['Cache-Control'] = 'public, max-age={}'.format(seconds)
+            return resp
+        return wrapper
+    return outer_wrapper
+
+
 #################### Web Pages ####################
 
 
 @app.route('/')
+@browser_cache(3600)
 @return_error_html
 def search_page():
     return render_template('search.html')
@@ -118,6 +133,7 @@ def rate_page(teacher_name):
 
 
 @app.route('/get-teachers', methods=['GET', 'POST'])
+@browser_cache(3600)
 @return_error_json
 def get_teachers():
     '''
@@ -127,9 +143,7 @@ def get_teachers():
         data: names of all teachers
     '''
 
-    resp = jsonify({'code': 0, 'data': get_all_teachers()})
-    resp.headers['Cache-Control'] = 'max-age=3600'
-    return resp
+    return jsonify({'code': 0, 'data': get_all_teachers()})
 
 
 @app.route('/login', methods=['POST'])
