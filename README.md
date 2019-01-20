@@ -22,6 +22,11 @@ USE `YOUR_DB_NAME`;
 
 3. Create tables.
 
+4. Install dependencies.
+```shell
+pip install flask flask-sqlalchemy flask-login flask-caching requests bs4
+```
+
 ### Script
 
 1. Clone this repository.
