@@ -24,7 +24,7 @@ USE `YOUR_DB_NAME`;
 
 4. Install dependencies.
 ```shell
-pip install flask flask-sqlalchemy flask-login flask-caching requests bs4
+pip install flask pymysql flask-sqlalchemy flask-login flask-caching requests bs4
 ```
 
 ### Script
