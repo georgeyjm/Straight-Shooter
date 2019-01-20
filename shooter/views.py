@@ -127,7 +127,9 @@ def get_teachers():
         data: names of all teachers
     '''
 
-    return jsonify({'code': 0, 'data': get_all_teachers()})
+    resp = jsonify({'code': 0, 'data': get_all_teachers()})
+    resp.headers['Cache-Control'] = 'max-age=3600'
+    return resp
 
 
 @app.route('/login', methods=['POST'])
