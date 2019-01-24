@@ -21,7 +21,7 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized_redirect():
-    return redirect(url_for('login_page'))
+    return redirect('/login?next=' + request.path)
 
 
 def return_error_json(func):
