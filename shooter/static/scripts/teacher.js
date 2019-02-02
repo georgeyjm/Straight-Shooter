@@ -53,9 +53,9 @@ function loadRatings(offset) {
                 </div>
                 </div>
                 </div>
-                `).hide().appendTo('#main-content').fadeIn().each(function() {
-                    addRatingCallback();
-                });
+                `).hide().appendTo('#main-content').fadeIn()
+
+
                 replies = rating[6]
                 if (replies != null) {
                     for (let reply of replies) {
@@ -77,13 +77,13 @@ function loadRatings(offset) {
                                 
                             </div>
                         </div>
-                        `).appendTo('#main-content div.wrapper:last').each(function() {
-                            addRepliesCallback();
-                        });
+                        `).appendTo('#main-content div.wrapper:last')
                     }
                     
                 }
             }
+
+            addRatingCallbacks();
 
             if (allRatings.length === 0) {
                 lazyLoad = false;
@@ -100,8 +100,8 @@ function loadRatings(offset) {
     });
 }
 
-function addRatingCallback() {
-    $('.vote-btn:last').click(function () {
+function addRatingCallbacks() {
+    $('.vote-btn').on('click', function () {
         console.log("Called callback!");
         if ($(this).children('i').hasClass('btn-checked')) {
             $(this).children('i').removeClass('btn-checked');
@@ -109,10 +109,8 @@ function addRatingCallback() {
             $(this).children('i').addClass('btn-checked');
         }
     });
-}
-function addRepliesCallback() {
 
-    $('.show-reply:last').click(function () {
+    $('.show-reply').on('click', function () {
         var content = this.nextElementSibling;
 
         if ($('.show-click').text() === "expand_more") {
