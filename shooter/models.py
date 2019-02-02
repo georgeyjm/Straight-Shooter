@@ -25,6 +25,7 @@ class Rating(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('ratings.id'), nullable=True)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=False)
     ups = db.Column(db.Integer, nullable=False, default=0)

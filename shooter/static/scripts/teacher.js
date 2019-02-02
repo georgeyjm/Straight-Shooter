@@ -1,3 +1,7 @@
+/* User interaction */
+
+
+
 let lazyLoad = true;
 let offset = 0;
 let loadingAsync = false;
@@ -12,7 +16,9 @@ function ratingLevel(rating) {
 }
 
 function getClasses(f) {
-    let formData = {teacher_id: TEACHER_ID};
+    let formData = {
+        teacher_id: TEACHER_ID
+    };
     $.post('/get-classes', formData, resp => {
         if (resp.code === 0) classes = resp.data;
         f();
@@ -20,6 +26,7 @@ function getClasses(f) {
 }
 
 function loadRatings(offset) {
+    console.log('load ratings');
     let formData = {
         teacher_id: TEACHER_ID,
         offset: offset
@@ -31,17 +38,51 @@ function loadRatings(offset) {
             let allRatings = resp.data;
             for (let rating of allRatings) {
                 $(`
-                    <div class='rating-container'>
-                      <div class='rating-rating-container'>
-                        <p class='rating ${ ratingLevel(rating[1] / 2) }'>${ (rating[1] / 2).toFixed(1) }</p>
-                        <p class='secondary-info'>${ classes[rating[0]] }</p>
-                      </div>
-                      <div>
-                        <p class='text-body'>${ rating[2] }</p>
-                        <p class='secondary-info text-italics'>${ timeago.format(rating[5] * 1000) }</p>
-                      </div>
-                    </div>
-                `).hide().appendTo('#main-content').fadeIn();
+                <div class="wrapper">
+                <div class="comment">
+                <div class="comment-text">
+                    <h3>This teacher is sensational!</h3>
+                    <p class="comment-content">${ rating[2] }</p>
+                    <div class="secondary-info text-italics" style="text-align: right">${ timeago.format(rating[5] * 1000) }</div>
+                </div>
+
+                <div class="vote-section">
+                    <p class="upvote">${ rating[3] }</p><a class="vote-btn upvote"><i class="far fa-thumbs-up fa-2x"></i></a>
+                    <a class="vote-btn downvote"><i class="far fa-thumbs-down fa-2x"></i></a>
+                    <p class="downvote">${ rating[4] }</p>
+                </div>
+                </div>
+                </div>
+                `).hide().appendTo('#main-content').fadeIn().each(function() {
+                    addRatingCallback();
+                });
+                replies = rating[6]
+                if (replies != null) {
+                    for (let reply of replies) {
+                        $(`
+                        <div class="reply">
+                            <div class="show-reply"><i class="material-icons show-click">expand_more</i>
+                                <p>Hide Replies</p>
+                            </div>
+    
+                            <div class="collapsible">
+                                <div class="comment">
+    
+                                    <div class="comment-text">
+                                        <p class="comment-content">${ reply[2] }</p>
+                                        <div class="secondary-info text-italics" style="text-align: right">${ timeago.format(reply[5] * 1000) }</div>
+                                    </div>
+    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        `).appendTo('#main-content div.wrapper:last').each(function() {
+                            addRepliesCallback();
+                        });
+                    }
+                    
+                }
             }
 
             if (allRatings.length === 0) {
@@ -53,8 +94,39 @@ function loadRatings(offset) {
             }
         }
 
+        
+
         loadingAsync = false;
     });
+}
+
+function addRatingCallback() {
+    $('.vote-btn:last').click(function () {
+        console.log("Called callback!");
+        if ($(this).children('i').hasClass('btn-checked')) {
+            $(this).children('i').removeClass('btn-checked');
+        } else {
+            $(this).children('i').addClass('btn-checked');
+        }
+    });
+}
+function addRepliesCallback() {
+
+    $('.show-reply:last').click(function () {
+        var content = this.nextElementSibling;
+
+        if ($('.show-click').text() === "expand_more") {
+            $('.show-click').text("expand_less");
+            $('.show-reply p').text("Show replies");
+            content.style.display = "none";
+
+        } else {
+            $('.show-click').text("expand_more");
+            $('.show-reply p').text("Hide replies");
+            content.style.display = "block";
+        }
+    });
+    console.log('Callbacks added');
 }
 
 

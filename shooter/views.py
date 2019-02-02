@@ -9,6 +9,8 @@ from shooter import app, db, login_manager
 from shooter.models import *
 from shooter.helper import *
 from shooter.site_config import *
+from sqlalchemy import and_, or_
+
 
 
 #################### Misc ####################
@@ -212,7 +214,8 @@ def get_ratings():
                     comment,
                     ups,
                     downs,
-                    created_ts
+                    created_ts,
+                    parent_id
                 ],
                 ...
             ]
@@ -229,8 +232,17 @@ def get_ratings():
     
     # Get the specified page of ratings
     offset = int(offset)
-    results = Rating.query.filter_by(teacher_id=teacher_id).offset(RATING_PAGE_SIZE * offset).limit(RATING_PAGE_SIZE).all()
-    results = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in results]
+
+    query_results = Rating.query.filter(and_(Rating.teacher_id==teacher_id, Rating.parent_id==None)).offset(RATING_PAGE_SIZE * offset).limit(RATING_PAGE_SIZE).all()
+
+    results = []
+
+    for i in query_results:
+        replies = Rating.query.filter_by(parent_id=i.id).all()
+        replies_data = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in replies]
+        results.append([i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp(), replies_data])
+
+    #results = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in results]
 
     return jsonify({'code': 0, 'data': results})
 

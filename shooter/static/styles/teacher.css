@@ -55,6 +55,164 @@
     display: none;
 }
 
+/* Forum layout */
+.wrapper{
+    background-color: #d3d3d36e;
+    padding: 0.5rem 2rem;
+    margin: 1rem 0 0 0;
+    border-radius: 16px;
+}
+
+h2 {
+    margin-bottom: 2rem;
+}
+
+.collapsible {
+    /*display: block; */
+
+    overflow: hidden;
+    transition: height 200ms;
+}
+
+.reply {
+    padding-left: 3rem;
+    padding-right: 3rem;
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+
+.show-reply {
+    display: flex;
+    flex-direction: row;
+}
+
+.show-reply p {
+    font-weight: bold;
+    color: #343432;
+    cursor: pointer;
+}
+
+.show-click {
+    margin-right: 0.5rem;
+    margin-top: -0.3rem;
+}
+
+.avatar.small {
+    width: 100px;
+    height: 100px;
+    background-image: url("assets/profile_user.jpg");
+    background-size: contain;
+    border-radius: 50%;
+}
+
+.name.small {
+    padding: 1rem;
+    text-align: center;
+}
+
+.profile-small {
+    width: 100px;
+    display: inline-block;
+}
+
+.vote-section {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    float: right;
+    font-family: 'Libre Baskerville', serif;
+}
+
+.comment {
+    margin-top: 1rem;
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.comment-content {
+    margin-top: 1rem;
+    line-height: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+
+.fa-thumbs-up  {
+    position: relative;
+    right: 0;
+    display: flex;
+    color: #000;
+    transition: 150ms ease-in-out;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.fa-thumbs-down {
+    position: relative;
+    right: 0;
+    top: 1rem;
+    display: flex;
+    color: #000;
+    transition: 150ms ease-in-out;
+    cursor: pointer;
+}
+
+.fa-thumbs-up:hover, .fa-thumbs-down:hover {
+    color: #00a99d;
+    transition: 150ms ease-in-out;
+}
+
+@keyframes wiggle {
+   0% { transform: rotate(0deg) scale(1); }
+   33% { transform: rotate(10deg)scale(1.2); }
+   67% { transform: rotate(-10deg) scale(1.2);}
+    100% { transform: rotate(0deg) scale(1);}
+}
+
+@keyframes down {
+    0% { transform: translateY(0); }
+    20% { transform: translateY(20%); }
+    50% { transform: translateY(0%); }
+    80% { transform: translateY(20%); }
+    100% { transform: translateY(0); }
+}
+
+.upvote .btn-checked {
+    color: #00a99d;
+    transition: 150ms ease-in-out;
+    animation-duration: 0.3s;
+    animation-iteration-count: 1;
+    animation-name: wiggle;
+
+}
+
+.downvote .btn-checked {
+    color: #00a99d;
+    transition: 150ms ease-in-out;
+    animation-duration: 0.4s;
+    animation-iteration-count: 1;
+    animation-name: down;
+}
+
+
+
+p.upvote {
+    margin-bottom: 0.3rem;
+    text-align: center;
+}
+
+p.downvote {
+    margin-top: 1.2rem;
+    text-align: center;
+}
+.comment-text {
+    display: inline-block;
+    vertical-align: top;
+    padding: 0 1rem 0 1rem ;
+    width: 100%;
+}
+
 /************** Responsive design ***************/
 
 
