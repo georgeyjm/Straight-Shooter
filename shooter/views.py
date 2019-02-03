@@ -233,7 +233,9 @@ def get_ratings():
     # Get the specified page of ratings
     offset = int(offset)
 
-    query_results = Rating.query.filter(and_(Rating.teacher_id==teacher_id, Rating.parent_id==None)).offset(RATING_PAGE_SIZE * offset).limit(RATING_PAGE_SIZE).all()
+    query_results_tot = Rating.query.filter(and_(Rating.teacher_id==teacher_id, Rating.parent_id==None))
+
+    query_results = query_results_tot.offset(RATING_PAGE_SIZE * offset).limit(RATING_PAGE_SIZE).all()
 
     results = []
 
@@ -244,7 +246,7 @@ def get_ratings():
 
     #results = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in results]
 
-    return jsonify({'code': 0, 'data': results})
+    return jsonify({'code': 0, 'data': results, 'loadMore': (len(query_results_tot.all()) > RATING_PAGE_SIZE)})
 
 
 @app.route('/get-classes', methods=['POST'])

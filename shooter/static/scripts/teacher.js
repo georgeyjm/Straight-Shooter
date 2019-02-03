@@ -1,7 +1,7 @@
 /* User interaction */
 
 
-
+var loadMore = false; 
 let lazyLoad = true;
 let offset = 0;
 let loadingAsync = false;
@@ -36,6 +36,9 @@ function loadRatings(offset) {
     $.post('/get-ratings', formData, resp => {
         if (resp.code === 0) {
             let allRatings = resp.data;
+            if (resp.loadMore) {
+                self.loadMore = true;
+            }
             for (let rating of allRatings) {
                 $(`
                 <div class="wrapper">
@@ -81,9 +84,12 @@ function loadRatings(offset) {
                     }
                     
                 }
+
             }
 
+            removeCallbacks();
             addRatingCallbacks();
+
 
             if (allRatings.length === 0) {
                 lazyLoad = false;
@@ -105,26 +111,48 @@ function addRatingCallbacks() {
         console.log("Called callback!");
         if ($(this).children('i').hasClass('btn-checked')) {
             $(this).children('i').removeClass('btn-checked');
+            if ($(this).hasClass('upvote')) {
+                let val = parseInt($(this).parent().children('p:first').text()) - 1;
+                $(this).parent().children('p:first').text(val.toString());
+            } else {
+                let val = parseInt($(this).parent().children('p:last').text()) - 1;
+                $(this).parent().children('p:last').text(val.toString());
+            }
+
         } else {
             $(this).children('i').addClass('btn-checked');
+            if ($(this).hasClass('upvote')) {
+                let val = parseInt($(this).parent().children('p:first').text()) + 1;
+                $(this).parent().children('p:first').text(val.toString());
+            } else {
+                let val = parseInt($(this).parent().children('p:last').text()) + 1;
+                $(this).parent().children('p:last').text(val.toString());
+            }
         }
     });
 
     $('.show-reply').on('click', function () {
         var content = this.nextElementSibling;
 
-        if ($('.show-click').text() === "expand_more") {
+        if ($('.show-click:last').text() === "expand_more") {
             $('.show-click').text("expand_less");
             $('.show-reply p').text("Show replies");
             content.style.display = "none";
 
         } else {
-            $('.show-click').text("expand_more");
+            $('.show-click:last').text("expand_more");
             $('.show-reply p').text("Hide replies");
             content.style.display = "block";
         }
     });
     console.log('Callbacks added');
+}
+
+function removeCallbacks() {
+    $('.vote-btn').off('click');
+
+    $('.show-reply').off('click');
+    console.log('Callbacks removed');
 }
 
 
@@ -139,7 +167,7 @@ if (overallRating !== 'N/A') {
 getClasses(() => loadRatings(offset));
 
 $(window).scroll(e => {
-    if (lazyLoad && !loadingAsync && $(this).scrollTop() >= $(document).height() - $(this).height() - 60) {
+    if (loadMore && lazyLoad && !loadingAsync && $(this).scrollTop() >= $(document).height() - $(this).height() - 60) {
         loadRatings(++offset);
     }
 });
