@@ -209,13 +209,14 @@ def get_ratings():
         data: ratings data
             [
                 [
-                    class_id,
-                    rating,
-                    comment,
-                    ups,
-                    downs,
-                    created_ts,
-                    parent_id
+                    0: class_id,
+                    1: rating,
+                    2: comment,
+                    3: ups,
+                    4: downs,
+                    5: created_ts,
+                    6: parent_id,
+                    7: rating_id
                 ],
                 ...
             ]
@@ -242,7 +243,7 @@ def get_ratings():
     for i in query_results:
         replies = Rating.query.filter_by(parent_id=i.id).all()
         replies_data = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in replies]
-        results.append([i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp(), replies_data])
+        results.append([i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp(), replies_data, i.id])
 
     #results = [[i.class_id, i.rating, i.comment, i.ups, i.downs, i.created.timestamp()] for i in results]
 
@@ -327,3 +328,19 @@ def rate_teacher():
     db.session.add(rating_obj)
     db.session.commit()
     return jsonify({'code': 0})
+
+@app.route('/vote', methods=['POST'])
+@login_required
+@return_error_json
+def vote():
+    rating_id = request.form.get('rating_id')
+    user_id = current_user.id
+    is_upvote = request.form.get('is_upvote')
+
+    rating = Rating.query.filter_by(id=rating_id).first()
+    if is_upvote:
+        rating.ups = Rating.ups + 1
+    else:
+        rating.downs = Rating.downs + 1
+    
+    return jsonify({ 'code': 0 })
