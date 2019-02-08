@@ -42,7 +42,7 @@ function loadRatings(offset) {
             for (let rating of allRatings) {
                 $(`
                 <div class="wrapper">
-                <div class="comment">
+                <div class="comment" id="${ rating[7] }">
                 <div class="comment-text">
                     <h3>This teacher is sensational!</h3>
                     <p class="comment-content">${ rating[2] }</p>
