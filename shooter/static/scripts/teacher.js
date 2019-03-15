@@ -112,21 +112,25 @@ function loadRatings(offset) {
 function addVoteCallbacks() {
     $('a.upvote').on('click', function() {
         formData = {
-            rating_id: $(this).attr('id'),
+            rating_id: $(this).parent().parent().attr('id'),
             is_upvote: true
         };
         $.post('/vote', formData, resp => {
-            console.log("Upvote response " + resp.code)
+            if (resp.code === -1) {
+                console.log("error " + resp.error + " " + resp.line);
+            }
         });
     });
 
     $('a.downvote').on('click', function() {
         formData = {
-            rating_id: $(this).attr('id'),
+            rating_id: $(this).parent().parent().attr('id'),
             is_upvote: false
         };
         $.post('/vote', formData, resp => {
-            console.log("Downvote response " + resp.code)
+            if (resp.code === -1) {
+                console.log("error " + resp.error + " " + resp.line);
+            }        
         });
     });
 }
