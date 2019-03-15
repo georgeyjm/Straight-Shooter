@@ -114,7 +114,7 @@ function addVoteCallbacks() {
             is_upvote: true
         };
         $.post('/vote', formData, resp => {
-            
+            console.log("Upvote response " + resp.code)
         });
     });
 
@@ -124,7 +124,7 @@ function addVoteCallbacks() {
             is_upvote: false
         };
         $.post('/vote', formData, resp => {
-            
+            console.log("Downvote response " + resp.code)
         });
     });
 }
