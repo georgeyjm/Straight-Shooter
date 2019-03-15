@@ -59,11 +59,12 @@ function loadRatings(offset) {
                 `).hide().appendTo('#main-content').fadeIn()
 
 
-                replies = rating[6]
+                replies = rating[6];
                 if (replies != null) {
                     for (let reply of replies) {
+                        id = reply[7];
                         $(`
-                        <div class="reply">
+                        <div class="reply" id="${ id }">
                             <div class="show-reply"><i class="material-icons show-click">expand_more</i>
                                 <p>Hide Replies</p>
                             </div>
@@ -103,6 +104,28 @@ function loadRatings(offset) {
         
 
         loadingAsync = false;
+    });
+}
+
+function addVoteCallbacks() {
+    $('a.upvote').on('click', function() {
+        formData = {
+            rating_id: $(this).attr('id'),
+            is_upvote: true
+        };
+        $.post('/vote', formData, resp => {
+            
+        });
+    });
+
+    $('a.downvote').on('click', function() {
+        formData = {
+            rating_id: $(this).attr('id'),
+            is_upvote: false
+        };
+        $.post('/vote', formData, resp => {
+            
+        });
     });
 }
 

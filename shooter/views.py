@@ -215,7 +215,9 @@ def get_ratings():
                     3: ups,
                     4: downs,
                     5: created_ts,
-                    6: parent_id,
+                    6: [
+                        replies, ...
+                    ]
                     7: rating_id
                 ],
                 ...
