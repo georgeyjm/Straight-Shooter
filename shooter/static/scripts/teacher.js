@@ -90,6 +90,8 @@ function loadRatings(offset) {
 
             removeCallbacks();
             addRatingCallbacks();
+            addVoteCallbacks();
+
 
 
             if (allRatings.length === 0) {
@@ -175,6 +177,8 @@ function removeCallbacks() {
     $('.vote-btn').off('click');
 
     $('.show-reply').off('click');
+    $('a.upvote').off('click');
+    $('a.downvote').off('click');
     console.log('Callbacks removed');
 }
 
